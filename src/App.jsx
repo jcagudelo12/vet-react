@@ -9,6 +9,7 @@ import {
 } from "./actions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
+import moment from "moment";
 
 function App() {
   const [showAddPet, setShowAddPet] = useState(false);
@@ -20,7 +21,7 @@ function App() {
   const handleShowDeletePet = () => setShowDeletePet(true);
 
   const [pet, setPet] = useState({
-    id: 1,
+    id: "",
     name: "",
     breed: "",
     date: "",
@@ -35,12 +36,12 @@ function App() {
   const [id, setId] = useState("");
   const [error, setError] = useState(null);
 
-  const handleInputChange = (event) => {
-    setPet({
-      ...pet,
-      [event.target.name]: event.target.value,
-    });
-  };
+  // moment.locale("es");
+  // const fecha1 = moment("2016-07-12");
+  // const fecha2 = moment().format("YYYY-MM-DD")
+  // const fecha3 = fecha.diff(fecha1, "hours");
+
+  // console.log(fecha2);
 
   useEffect(() => {
     (async () => {
@@ -50,6 +51,13 @@ function App() {
       }
     })();
   }, []);
+
+  const handleInputChange = (e) => {
+    setPet({
+      ...pet,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const validForm = () => {
     let isValid = true;
@@ -84,8 +92,21 @@ function App() {
       setError(result.error);
       return;
     }
-    setPets([...pets, { id: result.data.id, pet }]);
+    setPets([
+      ...pets,
+      {
+        id: result.data.id,
+        name: pet.name,
+        breed: pet.breed,
+        date: pet.date,
+        owner: pet.owner,
+        phone: pet.phone,
+        email: pet.email,
+        address: pet.address,
+      },
+    ]);
     setPet({
+      id: "",
       name: "",
       breed: "",
       date: "",
@@ -94,6 +115,7 @@ function App() {
       email: "",
       address: "",
     });
+    handleCloseAddPet();
   };
 
   const deletePet = async (id) => {
@@ -108,7 +130,16 @@ function App() {
   };
 
   const editPet = (thePet) => {
-    setPet(thePet);
+    setPet({
+      id: thePet.id,
+      name: thePet.name,
+      breed: thePet.breed,
+      date: thePet.date,
+      owner: thePet.owner,
+      phone: thePet.phone,
+      email: thePet.email,
+      address: thePet.address,
+    });
     setEditMode(true);
     setId(thePet.id);
     handleShowAddPet();
@@ -139,8 +170,17 @@ function App() {
     );
     setPets(editedPets);
     setEditMode(false);
-    setPet("");
+    setPet({
+      name: "",
+      breed: "",
+      date: "",
+      owner: "",
+      phone: "",
+      email: "",
+      address: "",
+    });
     setId("");
+    handleCloseAddPet();
   };
   return (
     <div className="App">
@@ -148,7 +188,7 @@ function App() {
         <div className="row">
           <div className="col-md-4">
             <h4 className="page-title">
-              <i className="fas fa-paw fa-2x mx-3"></i>Gestión de Mascotas
+              <em className="fas fa-paw fa-2x mx-3"></em>Gestión de Mascotas
             </h4>
           </div>
           <div className="col-md-3 offset-md-5">
@@ -156,7 +196,7 @@ function App() {
               className="btn btn-success btn-block"
               onClick={handleShowAddPet}
             >
-              <i className="fa fa-plus-square fa-2x d-block"></i>
+              <em className="fa fa-plus-square fa-2x d-block"></em>
               Agregar mascota
             </button>
           </div>
@@ -172,7 +212,7 @@ function App() {
                 <table className="table">
                   <thead className="thead-dark">
                     <tr>
-                      <th>Nombre</th>
+                      <th>Nombre mascota</th>
                       <th>Tipo (Raza)</th>
                       <th>Fecha de nacimiento</th>
                       <th>Propietario</th>
@@ -185,10 +225,10 @@ function App() {
                   <tbody>
                     {pets.map((pet) => (
                       <tr key={pet.id}>
-                        <td>{pet.name}</td>
-                        <td>{pet.breed}</td>
-                        <td>{pet.date}</td>
-                        <td>{pet.owner}</td>
+                        <td className="text-capitalize">{pet.name}</td>
+                        <td className="text-capitalize">{pet.breed}</td>
+                        <td>{pet.date} </td>
+                        <td className="text-capitalize">{pet.owner}</td>
                         <td>{pet.phone}</td>
                         <td>{pet.email}</td>
                         <td>{pet.address}</td>
@@ -198,13 +238,13 @@ function App() {
                             onClick={() => editPet(pet)}
                             className="btn btn-warning btn-sm"
                           >
-                            <i className="fa fa-pen fa-lg"></i>
+                            <em className="fa fa-pen fa-lg"></em>
                           </button>
                           <button
                             onClick={() => deletePet(pet.id)}
                             className="btn btn-danger btn-sm"
                           >
-                            <i className="fa fa-trash fa-lg"></i>
+                            <em className="fa fa-trash fa-lg"></em>
                           </button>
                         </td>
                       </tr>
@@ -216,6 +256,7 @@ function App() {
           </div>
         </div>
       </div>
+
       {/* Modal Add pet */}
       <Modal
         show={showAddPet}
@@ -235,8 +276,9 @@ function App() {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group controlId="formBasicName">
-                    <Form.Label>Nombre</Form.Label>
+                    <Form.Label>Nombre mascota</Form.Label>
                     <Form.Control
+                      className="text-capitalize"
                       type="text"
                       placeholder="Nombre mascota"
                       name="name"
@@ -248,6 +290,7 @@ function App() {
                   <Form.Group controlId="formBasicBreed">
                     <Form.Label>Tipo</Form.Label>
                     <Form.Control
+                      className="text-capitalize"
                       type="text"
                       placeholder="Ej: Bulldog Inglés "
                       name="breed"
@@ -271,6 +314,7 @@ function App() {
                   <Form.Group controlId="formBasicOwner">
                     <Form.Label>Propietario</Form.Label>
                     <Form.Control
+                      className="text-capitalize"
                       type="text"
                       placeholder="Nombre propietario"
                       name="owner"
@@ -352,7 +396,7 @@ function App() {
         </Modal.Header>
 
         <Modal.Body className="d-flex align-self-center">
-          <i className="fas fa-exclamation-triangle fa-3x text-warning mx-3"></i>
+          <em className="fas fa-exclamation-triangle fa-3x text-warning mx-3"></em>
           Estás seguro de eliminar la mascota:{" "}
         </Modal.Body>
         <Modal.Footer>
