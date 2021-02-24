@@ -9,11 +9,21 @@ import {
 } from "./actions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import moment from "moment";
 
 function App() {
   const [showAddPet, setShowAddPet] = useState(false);
-  const handleCloseAddPet = () => setShowAddPet(false);
+  const handleCloseAddPet = () => {
+    setPet({
+      name: "",
+      breed: "",
+      date: "",
+      owner: "",
+      phone: "",
+      email: "",
+      address: "",
+    });
+    setShowAddPet(false);
+  };
   const handleShowAddPet = () => setShowAddPet(true);
 
   const [showDeletePet, setShowDeletePet] = useState(false);
@@ -35,13 +45,6 @@ function App() {
   const [editMode, setEditMode] = useState(false);
   const [id, setId] = useState("");
   const [error, setError] = useState(null);
-
-  // moment.locale("es");
-  // const fecha1 = moment("2016-07-12");
-  // const fecha2 = moment().format("YYYY-MM-DD")
-  // const fecha3 = fecha.diff(fecha1, "hours");
-
-  // console.log(fecha2);
 
   useEffect(() => {
     (async () => {
@@ -160,13 +163,14 @@ function App() {
       email: pet.email,
       address: pet.address,
     });
+
     if (!result.statusResponse) {
       setError(result.error);
       return;
     }
 
     const editedPets = pets.map((item) =>
-      item.id === id ? { id, pet } : item
+      item.id === id ? { id, ...pet } : item
     );
     setPets(editedPets);
     setEditMode(false);
@@ -191,7 +195,7 @@ function App() {
               <em className="fas fa-paw fa-2x mx-3"></em>Gestión de Mascotas
             </h4>
           </div>
-          <div className="col-md-3 offset-md-5">
+          <div className="col-md-2 offset-md-6">
             <button
               className="btn btn-success btn-block"
               onClick={handleShowAddPet}
