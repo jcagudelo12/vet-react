@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
-import { isEmpty } from "lodash";
+import { isEmpty, size } from "lodash";
 import { Modal, Button, Form } from "react-bootstrap";
-import { getCollection, addDocument } from "./actions";
+import {
+  getCollection,
+  addDocument,
+  updateDocument,
+  deleteDocument,
+} from "./actions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 
@@ -27,6 +32,7 @@ function App() {
   const [pets, setPets] = useState([]);
 
   const [editMode, setEditMode] = useState(false);
+  const [id, setId] = useState("");
   const [error, setError] = useState(null);
 
   const handleInputChange = (event) => {
@@ -65,12 +71,6 @@ function App() {
       return;
     }
 
-    // const result = await addDocument("tasks", { name: task });
-    // if (!result.statusResponse) {
-    //   setError(result.error);
-    //   return;
-    // }
-    // setTasks([...pets, { id: result.data.id, name: task }]);
     const result = await addDocument("pets", {
       name: pet.name,
       breed: pet.breed,
@@ -96,10 +96,51 @@ function App() {
     });
   };
 
+  const deletePet = async (id) => {
+    handleShowDeletePet();
+    const result = await deleteDocument("pets", id);
+    if (!result.statusResponse) {
+      setError(result.error);
+      return;
+    }
+    const filterPet = pets.filter((pet) => pet.id !== id);
+    setPets(filterPet);
+  };
+
   const editPet = (thePet) => {
-    // setPet(thePet.name);
-    // setEditMode(true);
-    // setId(thePet.id);
+    setPet(thePet);
+    setEditMode(true);
+    setId(thePet.id);
+    handleShowAddPet();
+  };
+
+  const savePet = async (e) => {
+    e.preventDefault();
+    if (!validForm()) {
+      return;
+    }
+
+    const result = await updateDocument("pets", id, {
+      name: pet.name,
+      breed: pet.breed,
+      date: pet.date,
+      owner: pet.owner,
+      phone: pet.phone,
+      email: pet.email,
+      address: pet.address,
+    });
+    if (!result.statusResponse) {
+      setError(result.error);
+      return;
+    }
+
+    const editedPets = pets.map((item) =>
+      item.id === id ? { id, pet } : item
+    );
+    setPets(editedPets);
+    setEditMode(false);
+    setPet("");
+    setId("");
   };
   return (
     <div className="App">
@@ -123,47 +164,54 @@ function App() {
         <div className="row mt-3">
           <div className="col-12">
             <div className="table-responsive">
-              <table className="table">
-                <thead className="thead-dark">
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Tipo (Raza)</th>
-                    <th>Fecha de nacimiento</th>
-                    <th>Propietario</th>
-                    <th>Teléfono</th>
-                    <th>Email</th>
-                    <th>Dirección</th>
-                    <th>Opciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pets.map((pet) => (
+              {size(pets) === 0 ? (
+                <li className="list-group-item text-center">
+                  Aún no hay mascotas registradas.
+                </li>
+              ) : (
+                <table className="table">
+                  <thead className="thead-dark">
                     <tr>
-                      <td>{pet.name}</td>
-                      <td>{pet.breed}</td>
-                      <td>{pet.date}</td>
-                      <td>{pet.owner}</td>
-                      <td>{pet.phone}</td>
-                      <td>{pet.email}</td>
-                      <td>{pet.address}</td>
-                      <td className="d-flex justify-content-around">
-                        <button
-                          onClick={handleShowAddPet}
-                          className="btn btn-warning btn-sm"
-                        >
-                          <i className="fa fa-pen fa-lg"></i>
-                        </button>
-                        <button
-                          onClick={handleShowDeletePet}
-                          className="btn btn-danger btn-sm"
-                        >
-                          <i className="fa fa-trash fa-lg"></i>
-                        </button>
-                      </td>
+                      <th>Nombre</th>
+                      <th>Tipo (Raza)</th>
+                      <th>Fecha de nacimiento</th>
+                      <th>Propietario</th>
+                      <th>Teléfono</th>
+                      <th>Email</th>
+                      <th>Dirección</th>
+                      <th>Opciones</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {pets.map((pet) => (
+                      <tr key={pet.id}>
+                        <td>{pet.name}</td>
+                        <td>{pet.breed}</td>
+                        <td>{pet.date}</td>
+                        <td>{pet.owner}</td>
+                        <td>{pet.phone}</td>
+                        <td>{pet.email}</td>
+                        <td>{pet.address}</td>
+                        <td className="d-flex justify-content-around">
+                          <button
+                            // onClick={handleShowAddPet}
+                            onClick={() => editPet(pet)}
+                            className="btn btn-warning btn-sm"
+                          >
+                            <i className="fa fa-pen fa-lg"></i>
+                          </button>
+                          <button
+                            onClick={() => deletePet(pet.id)}
+                            className="btn btn-danger btn-sm"
+                          >
+                            <i className="fa fa-trash fa-lg"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
@@ -176,10 +224,12 @@ function App() {
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Agregar nueva mascota</Modal.Title>
+          <Modal.Title>
+            {editMode ? "Modificar mascota" : "Agregar nueva mascota"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={addPet}>
+          <Form onSubmit={editMode ? savePet : addPet}>
             {error && <span className="text-danger ">{error}</span>}
             <div className="container pr-5 pl-5">
               <div className="row">
@@ -270,10 +320,14 @@ function App() {
                 <div className="col-md-6 offset-md-3 text-center">
                   <Button
                     variant="success"
-                    className="btn btn-block"
+                    className={
+                      editMode
+                        ? "btn btn-warning btn-block"
+                        : "btn btn-dark btn-block"
+                    }
                     type="submit"
                   >
-                    Guardar
+                    {editMode ? "Guardar" : "Agregar"}
                   </Button>
                 </div>
               </div>
