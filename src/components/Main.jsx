@@ -13,7 +13,6 @@ import "../assets/css/style.css";
 
 function Main() {
   const currentDate = moment().format("YYYY-MM-DD");
-  console.log(currentDate);
   const [showAddPet, setShowAddPet] = useState(false);
   const handleCloseAddPet = () => {
     setPet({
@@ -29,7 +28,6 @@ function Main() {
     setEditMode(false);
   };
   const handleShowAddPet = () => setShowAddPet(true);
-
   const [showDeletePet, setShowDeletePet] = useState(false);
   const handleCloseDeletePet = () => setShowDeletePet(false);
   const handleShowDeletePet = () => setShowDeletePet(true);
