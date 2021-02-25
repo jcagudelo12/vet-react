@@ -7,8 +7,8 @@ body {
   position: relative;
   padding-bottom: 6rem;
   min-height: 100%;
-  /* overflow-y: hidden; */
 }
+
 .card-box {
   background-color: #fff;
   border: 1px solid #c3c3c3;
