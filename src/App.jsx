@@ -121,8 +121,23 @@ function App() {
     handleCloseAddPet();
   };
 
-  const deletePet = async (id) => {
+  const deletePetModal = (id) => {
+    const petFiltered = pets.find((pet) => pet.id === id);
+    setPet({
+      id: petFiltered.id,
+      name: petFiltered.name,
+      breed: petFiltered.breed,
+      date: petFiltered.date,
+      owner: petFiltered.owner,
+      phone: petFiltered.phone,
+      email: petFiltered.email,
+      address: petFiltered.address,
+    });
     handleShowDeletePet();
+    setId(id);
+  };
+
+  const deletePet = async () => {
     const result = await deleteDocument("pets", id);
     if (!result.statusResponse) {
       setError(result.error);
@@ -130,6 +145,7 @@ function App() {
     }
     const filterPet = pets.filter((pet) => pet.id !== id);
     setPets(filterPet);
+    handleCloseDeletePet();
   };
 
   const editPet = (thePet) => {
@@ -197,7 +213,7 @@ function App() {
           </div>
           <div className="col-md-2 offset-md-6">
             <button
-              className="btn btn-success btn-block"
+              className="btn btn-info btn-block"
               onClick={handleShowAddPet}
             >
               <em className="fa fa-plus-square fa-2x d-block"></em>
@@ -238,14 +254,13 @@ function App() {
                         <td>{pet.address}</td>
                         <td className="d-flex justify-content-around">
                           <button
-                            // onClick={handleShowAddPet}
                             onClick={() => editPet(pet)}
                             className="btn btn-warning btn-sm"
                           >
                             <em className="fa fa-pen fa-lg"></em>
                           </button>
                           <button
-                            onClick={() => deletePet(pet.id)}
+                            onClick={() => deletePetModal(pet.id)}
                             className="btn btn-danger btn-sm"
                           >
                             <em className="fa fa-trash fa-lg"></em>
@@ -371,7 +386,7 @@ function App() {
                     className={
                       editMode
                         ? "btn btn-warning btn-block"
-                        : "btn btn-dark btn-block"
+                        : "btn btn-info btn-block"
                     }
                     type="submit"
                   >
@@ -395,19 +410,15 @@ function App() {
         onHide={handleCloseDeletePet}
         backdrop="static"
       >
-        <Modal.Header closeButton>
-          <Modal.Title></Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body className="d-flex align-self-center">
-          <em className="fas fa-exclamation-triangle fa-3x text-warning mx-3"></em>
-          Estás seguro de eliminar la mascota:{" "}
+        <Modal.Body className="d-flex align-self-center mt-5">
+          <em className="far fa-sad-cry fa-3x mx-3"></em>
+          <h4>Estás seguro de eliminar a: {pet.name}</h4>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDeletePet}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={handleCloseDeletePet}>
+          <Button variant="danger" onClick={() => deletePet()}>
             Aceptar
           </Button>
         </Modal.Footer>
