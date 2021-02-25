@@ -6,11 +6,15 @@ import {
   addDocument,
   updateDocument,
   deleteDocument,
-} from "./actions";
+} from "./database/actions";
+import Footer from "./components/footer";
+import * as moment from "moment";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./style.css";
+import "./assets/css/style.css";
 
 function App() {
+  const currentDate = moment().format("YYYY-MM-DD");
+  console.log(currentDate);
   const [showAddPet, setShowAddPet] = useState(false);
   const handleCloseAddPet = () => {
     setPet({
@@ -23,6 +27,7 @@ function App() {
       address: "",
     });
     setShowAddPet(false);
+    setEditMode(false);
   };
   const handleShowAddPet = () => setShowAddPet(true);
 
@@ -70,12 +75,10 @@ function App() {
       setError("Debes ingresar la información de una mascota...");
       isValid = false;
     }
-
     return isValid;
   };
 
   const addPet = async (e) => {
-    console.log(pet);
     e.preventDefault();
 
     if (!validForm()) {
@@ -145,6 +148,17 @@ function App() {
     }
     const filterPet = pets.filter((pet) => pet.id !== id);
     setPets(filterPet);
+    setPet({
+      id: "",
+      name: "",
+      breed: "",
+      date: "",
+      owner: "",
+      phone: "",
+      email: "",
+      address: "",
+    });
+    setId("");
     handleCloseDeletePet();
   };
 
@@ -206,12 +220,12 @@ function App() {
     <div className="App">
       <div className="container-fluid mt-5 pr-5 pl-5">
         <div className="row">
-          <div className="col-md-4">
-            <h4 className="page-title">
+          <div className="col-md-10">
+            <h3 className="page-title">
               <em className="fas fa-paw fa-2x mx-3"></em>Gestión de Mascotas
-            </h4>
+            </h3>
           </div>
-          <div className="col-md-2 offset-md-6">
+          <div className="col-md-2">
             <button
               className="btn btn-info btn-block"
               onClick={handleShowAddPet}
@@ -222,7 +236,7 @@ function App() {
           </div>
         </div>
         <div className="row mt-3">
-          <div className="col-12">
+          <div className="col-12 card-box">
             <div className="table-responsive">
               {size(pets) === 0 ? (
                 <li className="list-group-item text-center">
@@ -275,7 +289,7 @@ function App() {
           </div>
         </div>
       </div>
-
+      <Footer />
       {/* Modal Add pet */}
       <Modal
         show={showAddPet}
@@ -327,6 +341,7 @@ function App() {
                       name="date"
                       onChange={handleInputChange}
                       value={pet.date}
+                      max={currentDate}
                       required
                     />
                   </Form.Group>
@@ -385,8 +400,8 @@ function App() {
                     variant="success"
                     className={
                       editMode
-                        ? "btn btn-warning btn-block"
-                        : "btn btn-info btn-block"
+                        ? "btn btn-warning btn-block btn-lg"
+                        : "btn btn-info btn-block btn-lg"
                     }
                     type="submit"
                   >
@@ -411,8 +426,10 @@ function App() {
         backdrop="static"
       >
         <Modal.Body className="d-flex align-self-center mt-5">
-          <em className="far fa-sad-cry fa-3x mx-3"></em>
-          <h4>Estás seguro de eliminar a: {pet.name}</h4>
+          <em className="far fa-sad-cry fa-5x mx-3"></em>
+          <h4 className="text-center">
+            Estás seguro de eliminar a: {pet.name}
+          </h4>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDeletePet}>
