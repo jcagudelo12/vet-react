@@ -17,6 +17,7 @@ function Main() {
   const handleCloseAddPet = () => {
     setPet({
       name: "",
+      type: "",
       breed: "",
       date: "",
       owner: "",
@@ -35,6 +36,7 @@ function Main() {
   const [pet, setPet] = useState({
     id: "",
     name: "",
+    type: "",
     breed: "",
     date: "",
     owner: "",
@@ -84,6 +86,7 @@ function Main() {
 
     const result = await addDocument("pets", {
       name: pet.name,
+      type: pet.type,
       breed: pet.breed,
       date: pet.date,
       owner: pet.owner,
@@ -100,6 +103,7 @@ function Main() {
       {
         id: result.data.id,
         name: pet.name,
+        type: pet.type,
         breed: pet.breed,
         date: pet.date,
         owner: pet.owner,
@@ -111,6 +115,7 @@ function Main() {
     setPet({
       id: "",
       name: "",
+      type: "",
       breed: "",
       date: "",
       owner: "",
@@ -126,6 +131,7 @@ function Main() {
     setPet({
       id: petFiltered.id,
       name: petFiltered.name,
+      type: petFiltered.type,
       breed: petFiltered.breed,
       date: petFiltered.date,
       owner: petFiltered.owner,
@@ -148,6 +154,7 @@ function Main() {
     setPet({
       id: "",
       name: "",
+      type: "",
       breed: "",
       date: "",
       owner: "",
@@ -163,6 +170,7 @@ function Main() {
     setPet({
       id: thePet.id,
       name: thePet.name,
+      type: thePet.type,
       breed: thePet.breed,
       date: thePet.date,
       owner: thePet.owner,
@@ -183,6 +191,7 @@ function Main() {
 
     const result = await updateDocument("pets", id, {
       name: pet.name,
+      type: pet.type,
       breed: pet.breed,
       date: pet.date,
       owner: pet.owner,
@@ -203,6 +212,7 @@ function Main() {
     setEditMode(false);
     setPet({
       name: "",
+      type: "",
       breed: "",
       date: "",
       owner: "",
@@ -244,7 +254,8 @@ function Main() {
                   <thead className="thead-dark">
                     <tr>
                       <th>Nombre mascota</th>
-                      <th>Tipo (Raza)</th>
+                      <th>Tipo</th>
+                      <th>Raza</th>
                       <th>Fecha de nacimiento</th>
                       <th>Propietario</th>
                       <th>Teléfono</th>
@@ -257,6 +268,7 @@ function Main() {
                     {pets.map((pet) => (
                       <tr key={pet.id}>
                         <td className="text-capitalize">{pet.name}</td>
+                        <td className="text-capitalize">{pet.type}</td>
                         <td className="text-capitalize">{pet.breed}</td>
                         <td>{pet.date} </td>
                         <td className="text-capitalize">{pet.owner}</td>
@@ -321,6 +333,20 @@ function Main() {
                     <Form.Control
                       className="text-capitalize"
                       type="text"
+                      placeholder="Ej: Canino "
+                      name="type"
+                      onChange={handleInputChange}
+                      value={pet.type}
+                      required
+                    />
+                  </Form.Group>
+                </div>
+                <div className="col-md-6">
+                  <Form.Group controlId="formBasicBreed">
+                    <Form.Label>Raza</Form.Label>
+                    <Form.Control
+                      className="text-capitalize"
+                      type="text"
                       placeholder="Ej: Bulldog Inglés "
                       name="breed"
                       onChange={handleInputChange}
@@ -328,8 +354,6 @@ function Main() {
                       required
                     />
                   </Form.Group>
-                </div>
-                <div className="col-md-6">
                   <Form.Group controlId="formBasicDate">
                     <Form.Label>Fecha Nacimiento</Form.Label>
                     <Form.Control
@@ -341,6 +365,8 @@ function Main() {
                       required
                     />
                   </Form.Group>
+                </div>
+                <div className="col-md-6">
                   <Form.Group controlId="formBasicOwner">
                     <Form.Label>Propietario</Form.Label>
                     <Form.Control
@@ -353,8 +379,6 @@ function Main() {
                       required
                     />
                   </Form.Group>
-                </div>
-                <div className="col-md-6">
                   <Form.Group controlId="formBasicPhone">
                     <Form.Label>Teléfono</Form.Label>
                     <Form.Control
@@ -366,6 +390,8 @@ function Main() {
                       required
                     />
                   </Form.Group>
+                </div>
+                <div className="col-md-6">
                   <Form.Group controlId="formBasicAddress">
                     <Form.Label>Dirección</Form.Label>
                     <Form.Control
@@ -377,8 +403,6 @@ function Main() {
                       required
                     />
                   </Form.Group>
-                </div>
-                <div className="col-md-6">
                   <Form.Group controlId="formBasicEmail">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
