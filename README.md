@@ -1,3 +1,11 @@
+Firebase URL project: https://vet-app-a301d.firebaseapp.com/
+
+Netlify URL project: https://priceless-pike-678d33.netlify.app/
+
+Explication proyect : https://www.youtube.com/watch?v=_hPrr5zdrV8
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
